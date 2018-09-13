@@ -63,101 +63,101 @@ def writeBottomFacet(x, y, z, hs):
 
     return ret
 
-def writeNorthFacet(x, y, z, hs):
+def writeNorthFacet(x, y, heightmap, hs):
     ret = bytearray()
     # Normal - A
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', (x+1)*hs, y*hs, z + 1)
+    ret += pack('3f', (x+1)*hs, y*hs, heightmap[y][x+1])
     # Vertex 3
-    ret += pack('3f', x*hs, y*hs, z + 1)
+    ret += pack('3f', x*hs, y*hs, heightmap[y][x])
     # End Facet
     ret += pack('h', 0)
     # Normal - B
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', (x+1)*hs, y*hs, z)
+    ret += pack('3f', (x+1)*hs, y*hs, 0)
     # Vertex 3
-    ret += pack('3f', (x+1)*hs, y*hs, z + 1)
+    ret += pack('3f', (x+1)*hs, y*hs, heightmap[y][x+1])
     # End Facet
     ret += pack('h', 0)
 
     return ret
 
-def writeSouthFacet(x, y, z, hs):
+def writeSouthFacet(x, y, heightmap, hs):
     ret = bytearray()
     # Normal - A
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', x*hs, y*hs, z + 1)
+    ret += pack('3f', x*hs, y*hs, heightmap[y][x])
     # Vertex 3
-    ret += pack('3f', (x+1)*hs, y*hs, z + 1)
+    ret += pack('3f', (x+1)*hs, y*hs, heightmap[y][x+1])
     # End Facet
     ret += pack('h', 0)
     # Normal - B
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', (x+1)*hs, y*hs, z + 1)
+    ret += pack('3f', (x+1)*hs, y*hs, heightmap[y][x+1])
     # Vertex 3
-    ret += pack('3f', (x+1)*hs, y*hs, z)
+    ret += pack('3f', (x+1)*hs, y*hs, 0)
     # End Facet
     ret += pack('h', 0)
 
     return ret
 
-def writeEastFacet(x, y, z, hs):
+def writeEastFacet(x, y, heightmap, hs):
     ret = bytearray()
     # Normal - A
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', x*hs, y*hs, z + 1)
+    ret += pack('3f', x*hs, y*hs, heightmap[y][x])
     # Vertex 3
-    ret += pack('3f', x*hs, (y+1)*hs, z + 1)
+    ret += pack('3f', x*hs, (y+1)*hs, heightmap[y+1][x])
     # End Facet
     ret += pack('h', 0)
     # Normal - B
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', x*hs, (y+1)*hs, z + 1)
+    ret += pack('3f', x*hs, (y+1)*hs, heightmap[y+1][x])
     # Vertex 3
-    ret += pack('3f', x*hs, (y+1)*hs, z)
+    ret += pack('3f', x*hs, (y+1)*hs, 0)
     # End Facet
     ret += pack('h', 0)
 
     return ret
 
-def writeWestFacet(x, y, z, hs):
+def writeWestFacet(x, y, heightmap, hs):
     ret = bytearray()
     # Normal - A
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', x*hs, (y+1)*hs, z + 1)
+    ret += pack('3f', x*hs, (y+1)*hs, heightmap[y+1][x])
     # Vertex 3
-    ret += pack('3f', x*hs, y*hs, z + 1)
+    ret += pack('3f', x*hs, y*hs, heightmap[y][x])
     # End Facet
     ret += pack('h', 0)
     # Normal - B
     ret += pack('3f', 0, -1, 0)
     # Vertex 1
-    ret += pack('3f', x*hs, y*hs, z)
+    ret += pack('3f', x*hs, y*hs, 0)
     # Vertex 2
-    ret += pack('3f', x*hs, (y+1)*hs, z)
+    ret += pack('3f', x*hs, (y+1)*hs, 0)
     # Vertex 3
-    ret += pack('3f', x*hs, (y+1)*hs, z + 1)
+    ret += pack('3f', x*hs, (y+1)*hs, heightmap[y+1][x])
     # End Facet
     ret += pack('h', 0)
 

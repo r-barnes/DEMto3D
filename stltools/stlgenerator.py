@@ -14,15 +14,15 @@ def CalculateRow(heightmap, y, h_scale):
     facets = bytearray()
     height = heightmap.shape[0] - 1
     width  = heightmap.shape[1] - 1
-    facets += writefacets.writeEastFacet(0, y, 0, h_scale)
-    facets += writefacets.writeWestFacet(width, y, 0, h_scale)
+    facets += writefacets.writeEastFacet(x=0,     y=y, heightmap=heightmap, hs=h_scale)
+    facets += writefacets.writeWestFacet(x=width, y=y, heightmap=heightmap, hs=h_scale)
     for x in range(width):
         if y == 0:
-            facets += writefacets.writeNorthFacet(x, y, 0, h_scale)
-        if y == height-1:
-            facets += writefacets.writeSouthFacet(x, y+1, 0, h_scale)
-        facets += writefacets.writeBottomFacet(x, y, 0, h_scale)
-        facets += writefacets.writeTopFacet(x, y, h_scale, heightmap)
+            facets += writefacets.writeNorthFacet(x=x, y=y,   heightmap=heightmap, hs=h_scale)
+        elif y == height-1:
+            facets += writefacets.writeSouthFacet(x=x, y=y+1, heightmap=heightmap, hs=h_scale)
+        facets += writefacets.writeBottomFacet(x=x, y=y, z=0, hs=h_scale)
+        facets += writefacets.writeTopFacet   (x=x, y=y, hs=h_scale, heightmap=heightmap)
     return facets
 
 def generate_from_heightmap_array(heightmap, destination, hsize=1, vsize=1, base=0, hsep=0.6, padsize=0.75, objectname="DEM 3D Model", multiprocessing=True):
@@ -49,10 +49,10 @@ def generate_from_heightmap_array(heightmap, destination, hsize=1, vsize=1, base
     heightmap += base                  #Add the indicated amount of base (in arbitrary units)
 
     pad_array = np.zeros((math.ceil(padsize/h_scale), heightmap.shape[1]))+heightmap.max()  #Should be ~0.75 inches
-    heightmap = np.concatenate((pad_array, separation_array, heightmap, separation_array, pad_array), axis=0)
+    heightmap = np.concatenate((pad_array, separation_array+base, heightmap, separation_array+base, pad_array), axis=0)
 
     #Pad the heightmap so that it joins the polygons at the sides of the base.
-    heightmap = np.pad(heightmap, ((1,1),(1,1)), mode='constant', constant_values=0)
+    # heightmap = np.pad(heightmap, ((1,1),(1,1)), mode='constant', constant_values=0)
 
     percentComplete = 0
     height = heightmap.shape[0] - 1
