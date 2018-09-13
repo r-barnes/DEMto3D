@@ -25,7 +25,9 @@ def CalculateRow(heightmap, y, h_scale):
         facets += writefacets.writeTopFacet   (x=x, y=y, hs=h_scale, heightmap=heightmap)
     return facets
 
-def generate_from_heightmap_array(heightmap, destination, hsize=1, vsize=1, base=0, hsep=0.6, padsize=0.75, objectname="DEM 3D Model", multiprocessing=True):
+np.set_printoptions(threshold=np.inf)
+
+def generate_from_heightmap_array(heightmap, destination, hsize=1, vsize=1, base=0, hsep=0.6, anchorsize=0.75, sep_dep=0.1, tab_dep=0.3, tab_size=0.5, objectname="DEM 3D Model", multiprocessing=True):
     #A binary STL file has an 80-character header (which is generally ignored,
     #but should never begin with "solid" because that may lead some software to
     #assume that this is an ASCII STL file). 
@@ -33,23 +35,30 @@ def generate_from_heightmap_array(heightmap, destination, hsize=1, vsize=1, base
         raise Exception("STL object name must be 80 characters or less!")
 
 
-    if isinstance(heightmap,list):
-        h_scale          = hsize/heightmap[0].shape[1]
-        separation_array = np.zeros((math.ceil(hsep/h_scale), heightmap[0].shape[1]))
-        heightmap_new    = [heightmap[0]]
-        for hm in heightmap[1:]:
-            heightmap_new += [separation_array, hm]
-        heightmap = np.concatenate(heightmap_new, axis=0)
-    else:
-        h_scale = hsize/heightmap.shape[1]
-        separation_array = np.zeros((math.ceil(hsep/h_scale), heightmap[0].shape[1]))
+    if not isinstance(heightmap,list):
+        heightmap = [heightmap]
 
-    heightmap -= heightmap.min()       #Set base elevation to 0
-    heightmap *= vsize/heightmap.max() #Scale heightmap to fit in vsize arbitrary units
-    heightmap += base                  #Add the indicated amount of base (in arbitrary units)
+    hmin = min([hm.min() for hm in heightmap])
+    hmax = max([hm.max() for hm in heightmap])
 
-    pad_array = np.zeros((math.ceil(padsize/h_scale), heightmap.shape[1]))+heightmap.max()  #Should be ~0.75 inches
-    heightmap = np.concatenate((pad_array, separation_array+base, heightmap, separation_array+base, pad_array), axis=0)
+    heightmap       -= hmin                                              #Set base elevation to 0
+    heightmap       *= vsize/hmax                                        #Convert heightmap from input units to output units
+    heightmap       += base                                              #Add the indicated amount of base (in output units)
+    h_scale          = hsize/heightmap[0].shape[1]                       #Find the horizontal scale
+    tab_size         = math.ceil(tab_size/h_scale)                       #Convert tab size from output units to cells
+    separation_array = np.zeros(shape=(1,heightmap[0].shape[1]))+sep_dep #Separation array equal to width of piece set to sep_dep height
+    separation_array[0,0:tab_size] = tab_dep                             #Add tabs
+    separation_array[0,-tab_size:] = tab_dep                             #Add tabs
+    separation_array = np.repeat(separation_array, repeats=math.ceil(hsep/h_scale), axis=0) #Make sure separation array is appropriately wide
+    heightmap_new    = [heightmap[0]]
+    for hm in heightmap[1:]:
+        heightmap_new += [separation_array, hm]
+    heightmap = np.concatenate(heightmap_new, axis=0)
+
+
+    if anchorsize>0:
+        pad_array = np.zeros((math.ceil(anchorsize/h_scale), heightmap.shape[1]))+heightmap.max()  #Should be ~0.75 inches
+        heightmap = np.concatenate((pad_array, separation_array, heightmap, separation_array, pad_array), axis=0)
 
     #Pad the heightmap so that it joins the polygons at the sides of the base.
     # heightmap = np.pad(heightmap, ((1,1),(1,1)), mode='constant', constant_values=0)
