@@ -40,16 +40,15 @@ no_datas = [x.GetNoDataValue() for x in bands]
 srcdata  = [x.ReadAsArray() for x in bands]
 dtypes   = [x.DataType in allowed_types for x in bands]
 
+
 if not all(dtypes):
   raise Exception("One of the inputs had an unsupported datatype!")
+
 
 for i in range(len(srcdata)):
   srcdata[i] = np.clip(srcdata[i], args.min, args.max)
   sigma      = [1, 1]
   srcdata[i] = sp.ndimage.filters.gaussian_filter(srcdata[i], sigma, mode='constant')
-
-
-
 
 
 if args.combine=='vstack':
