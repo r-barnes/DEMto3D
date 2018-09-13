@@ -32,10 +32,16 @@ args = parser.parse_args()
 
 filetype = args.sourcefile[-3:]
 
+allowed_types = {gdal.GDT_Byte,gdal.GDT_Int16,gdal.GDT_Int32,gdal.GDT_UInt16,gdal.GDT_UInt32,gdal.GDT_Float32,gdal.GDT_Float64}
+
 files    = [gdal.Open(x) for x in args.sourcefile]
 bands    = [x.GetRasterBand(1) for x in files]
 no_datas = [x.GetNoDataValue() for x in bands]
 srcdata  = [x.ReadAsArray() for x in bands]
+dtypes   = [x.DataType in allowed_types for x in bands]
+
+if not all(dtypes):
+  raise Exception("One of the inputs had an unsupported datatype!")
 
 for i in range(len(srcdata)):
   srcdata[i] = np.clip(srcdata[i], args.min, args.max)
@@ -44,9 +50,6 @@ for i in range(len(srcdata)):
 
 
 
-#allowed_types = {gdal.GDT_Byte,gdal.GDT_Int16,gdal.GDT_Int32,gdal.GDT_UInt16,gdal.GDT_UInt32,gdal.GDT_Float32,gdal.GDT_Float64}
-#if not srcband.DataType in allowed_types:
-#  raise Exception("This datatype is not supported. Please file a bug report on RichDEM.")
 
 
 if args.combine=='vstack':
