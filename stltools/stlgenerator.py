@@ -55,13 +55,10 @@ def generate_from_heightmap_array(heightmap, destination, hsize=1, vsize=1, base
         heightmap_new += [separation_array, hm]
     heightmap = np.concatenate(heightmap_new, axis=0)
 
-
     if anchorsize>0:
         pad_array = np.zeros((math.ceil(anchorsize/h_scale), heightmap.shape[1]))+heightmap.max()  #Should be ~0.75 inches
         heightmap = np.concatenate((pad_array, separation_array, heightmap, separation_array, pad_array), axis=0)
 
-    #Pad the heightmap so that it joins the polygons at the sides of the base.
-    # heightmap = np.pad(heightmap, ((1,1),(1,1)), mode='constant', constant_values=0)
 
     percentComplete = 0
     height = heightmap.shape[0] - 1
